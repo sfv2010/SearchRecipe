@@ -5,12 +5,6 @@ import { openCloseList } from "./utils/openCloseList.js";
 import { displayTag } from "./utils/displayTag.js";
 import { searchByInputKeyword } from "./utils/searchByInputKeyword.js";
 
-//Function to capitalize first letter
-function capitalize(array) {
-    for (let i = 0; i < array.length; i++) {
-        array[i] = array[i].charAt(0).toUpperCase() + array[i].slice(1);
-    }
-}
 //display recipes cards
 export function displayMainData(recipes) {
     const main = document.querySelector("main");
@@ -20,16 +14,34 @@ export function displayMainData(recipes) {
         main.appendChild(recipeCardDOM);
     });
 }
+//Function to capitalize first letter
+function capitalize(array) {
+    for (let i = 0; i < array.length; i++) {
+        array[i] = array[i].charAt(0).toUpperCase() + array[i].slice(1);
+    }
+}
+function createList(name, names, ul) {
+    const listRecipe = document.createElement("li");
+    listRecipe.classList.add("listRecipe");
+    listRecipe.classList.add(names);
+    listRecipe.textContent = name;
+    listRecipe.tabIndex = "0";
+    ul.appendChild(listRecipe);
+}
+
 //Loop through the recipes array and create a list for each
 //list Ingredient
 export function displayIngredientData(recipes) {
-    const listTags = document.querySelectorAll(".tag.target.ingredients");
+    const targetTags = document.querySelectorAll(".tag.target.ingredients");
     const ulIngredient = document.querySelector(".ulIngredient");
     let arrayIngredients = [];
+    //When selected in the list
     recipes.forEach((recipe) => {
         recipe.ingredients.forEach((ingredientKey) => {
+            //targetTags要素にtag.textContentがingredentKey.ingredientの値を含む要素があるか（材料名と一致するか）を確認し、あればfalse,なければretun〜を返す？　材料名と一致するタグが見つからなければ、arrayIngredients配列に材料名を追加する。
+            // 選択した文字が消える。If文がなくなると消えなくなる。
             if (
-                !Array.from(listTags).find((tag) => {
+                !Array.from(targetTags).find((tag) => {
                     return tag.textContent
                         .toLowerCase()
                         .includes(ingredientKey.ingredient.toLowerCase());
@@ -38,27 +50,25 @@ export function displayIngredientData(recipes) {
                 arrayIngredients.push(ingredientKey.ingredient.toLowerCase());
         });
     });
+    console.log(arrayIngredients);
+    console.log(targetTags);
     capitalize(arrayIngredients);
     let sortIngredients = [...new Set(arrayIngredients)].sort();
     ulIngredient.textContent = "";
     sortIngredients.forEach((ingredient) => {
-        const listRecipe = document.createElement("li");
-        listRecipe.classList.add("listRecipe");
-        listRecipe.classList.add("ingredients");
-        listRecipe.textContent = ingredient;
-        listRecipe.tabIndex = "0";
-        ulIngredient.appendChild(listRecipe);
+        createList(ingredient, "ingredients", ulIngredient);
     });
+    //createTag
     displayTag(recipes, "ingredients");
 }
 //list Appliance
 export function displayApplianceData(recipes) {
-    const listTags = document.querySelectorAll(".tag.target.appliances");
+    const targetTags = document.querySelectorAll(".tag.target.appliances");
     const ulAppliance = document.querySelector(".ulAppliance");
     let arrayAppliances = [];
     recipes.forEach((recipe) => {
         if (
-            !Array.from(listTags).find((tag) => {
+            !Array.from(targetTags).find((tag) => {
                 return tag.textContent
                     .toLowerCase()
                     .includes(recipe.appliance.toLowerCase());
@@ -69,24 +79,19 @@ export function displayApplianceData(recipes) {
     let sortAppliances = [...new Set(arrayAppliances)].sort();
     ulAppliance.textContent = "";
     sortAppliances.forEach((appliance) => {
-        const listRecipe = document.createElement("li");
-        listRecipe.classList.add("listRecipe");
-        listRecipe.classList.add("appliances");
-        listRecipe.textContent = appliance;
-        listRecipe.tabIndex = "0";
-        ulAppliance.appendChild(listRecipe);
+        createList(appliance, "appliances", ulAppliance);
     });
     displayTag(recipes, "appliances");
 }
 export function displayUstensileData(recipes) {
-    const listTags = document.querySelectorAll(".tag.target.ustensiles");
+    const targetTags = document.querySelectorAll(".tag.target.ustensiles");
     const ulUstensile = document.querySelector(".ulUstensile");
     let arrayUstensils = [];
 
     recipes.forEach((recipe) => {
         recipe.ustensils.forEach((ustensil) => {
             if (
-                !Array.from(listTags).find((tag) => {
+                !Array.from(targetTags).find((tag) => {
                     return tag.textContent
                         .toLowerCase()
                         .includes(ustensil.toLowerCase());
@@ -100,17 +105,12 @@ export function displayUstensileData(recipes) {
     let sortUstensiles = [...new Set(arrayUstensils)].sort();
     ulUstensile.textContent = "";
     sortUstensiles.forEach((ustensile) => {
-        const listRecipe = document.createElement("li");
-        listRecipe.classList.add("listRecipe");
-        listRecipe.classList.add("ustensiles");
-        listRecipe.textContent = ustensile;
-        listRecipe.tabIndex = "0";
-        ulUstensile.appendChild(listRecipe);
+        createList(ustensile, "ustensiles", ulUstensile);
     });
     displayTag(recipes, "ustensiles");
 }
 
-//Function to get and display recipe data-
+//Function to get and display recipe data
 displayMainData(recipes);
 displayIngredientData(recipes);
 displayApplianceData(recipes);
